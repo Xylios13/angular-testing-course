@@ -21,6 +21,10 @@ describe('CoursesService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
   })
 
+  afterEach(() => {
+    httpTestingController.verify();
+  })
+
   it('should retrieve all courses', () => {
     coursesService.findAllCourses()
     .subscribe(courses => {
@@ -35,5 +39,16 @@ describe('CoursesService', () => {
     testRequest.flush({
       payload: Object.values(COURSES)
     });
+  });
+
+  it('should find a course by id', () => {
+    coursesService.findCourseById(12)
+    .subscribe(course => {
+      expect(course).toBeTruthy();
+      expect(course.id).toBe(12);
+    });
+    const testRequest = httpTestingController.expectOne('/api/courses/12');
+    expect(testRequest.request.method).toEqual("GET");
+    testRequest.flush(COURSES[12]);
   });
 });
