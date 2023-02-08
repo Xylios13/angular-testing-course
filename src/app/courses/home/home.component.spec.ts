@@ -68,21 +68,17 @@ describe('HomeComponent', () => {
     expect(tabs.length).toBe(2, "Unexpected number of tabs found");
   });
 
-  it("should display advanced courses when tab clicked", (done: DoneFn) => {
+  it("should display advanced courses when tab clicked", fakeAsync(() => {
     coursesService.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
     const tabs = element.queryAll(By.css('.mdc-tab'));
-    console.log(tabs);
     click(tabs[1]);
     fixture.detectChanges();
-    setTimeout(() => {
-      const cardTitles = element.queryAll(By.css('.mat-mdc-tab-body-active .mat-mdc-card-title'));
-      console.log(cardTitles);
-      expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
-      expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
-      done();
-    }, 1000);
-  });
+    flush();
+    const cardTitles = element.queryAll(By.css('.mat-mdc-tab-body-active .mat-mdc-card-title'));
+    expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+  }));
 });
 
 
