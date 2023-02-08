@@ -1,5 +1,6 @@
 import { CalculatorService } from "./calculator.service";
 import { LoggerService } from "./logger.service";
+import { TestBed } from "@angular/core/testing";
 
 // Test suite
 describe('CalculatorService', () => {
@@ -10,7 +11,18 @@ describe('CalculatorService', () => {
     // Mock implementation of LoggerService
     loggerSpy = jasmine.createSpyObj('LoggerService', ['log']);
     // No need to call spyOn(loggerService, 'log'); as the spy object is already being spied on.
-    calculator = new CalculatorService(loggerSpy);
+
+    TestBed.configureTestingModule({
+      providers: [
+        CalculatorService,
+        {
+          provide: LoggerService,
+          useValue: loggerSpy
+        }
+      ]
+    })
+
+    calculator = TestBed.inject(CalculatorService);
   })
 
   // Contains a series of specifications
