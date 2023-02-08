@@ -2,6 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
 import { CoursesService } from "./courses.service";
 import { COURSES } from "../../../../server/db-data";
+import {Course} from "../model/course";
 
 describe('CoursesService', () => {
   let coursesService: CoursesService;
@@ -50,5 +51,22 @@ describe('CoursesService', () => {
     const testRequest = httpTestingController.expectOne('/api/courses/12');
     expect(testRequest.request.method).toEqual("GET");
     testRequest.flush(COURSES[12]);
+  });
+
+  it('should save the course data', () => {
+    const changes: Partial<Course> = { titles: { description: 'Testing Course' } }
+    coursesService.saveCourse(12, changes)
+    .subscribe(course => {
+      expect(course).toBeTruthy();
+      expect(course.id).toBe(12);
+    });
+    const testRequest = httpTestingController.expectOne('/api/courses/12');
+    expect(testRequest.request.method).toEqual("PUT");
+    expect(testRequest.request.body.titles.description).toEqual(changes.titles.description);
+    // Create a new object based on the stored course and the changes to simulate PUT response
+    testRequest.flush({
+      ...COURSES[12],
+      ...changes
+    });
   });
 });
